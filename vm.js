@@ -79,6 +79,11 @@ VM.prototype.step = function() {
         this.pc += 2 // an instruction is 2 bytes
       }
       break
+    case 0x5000:
+      if (this.V[x] === this.V[y]) {
+        this.pc += 2
+      }
+      break
     case 0x6000:
       // 6xkk - Set Vx = kk.
       this.V[x] = kk
@@ -87,10 +92,57 @@ VM.prototype.step = function() {
       // 7xkk - Set Vx = Vx + kk.
       this.V[x] = this.V[x] + kk
       break
+    case 0x8000:
+      switch (instruction & 0x00F) {
+        case 0x8000:
+          this.V[x] = this.V[y]
+          break
+        case 0x8001:
+          this.V[x] = this.V[x] | this.V[y]
+          break
+        case 0x8002:
+          this.V[x] = this.V[x] & this.V[y]
+          break
+        case 0x8003:
+          this.V[x] = this.V[x] ^ this.V[y]
+          break
+        case 0x8004:
+          this.V[x] = this.V[x] + this.V[y]
+          if (this.V[x] > 0xFF) {
+            this.V[0xF] = 1
+          } else {
+            this.V[0xF] = 0
+          }
+          break
+        case 0x8005:
+          if (this.V[x] > this.V[y]) {
+            this.V[0xF] = 1
+          } else {
+            this.V[0xF] = 0
+          }
+          this.V[x] = this.V[x] - this.V[y]
+          break
+        case 0x8006:
+          if ()
+          break
+        case 0x8007:
+          this.V[x] = this.V[x] | this.V[y]
+          break
+        case 0x800E:
+          this.V[x] = this.V[x] | this.V[y]
+          break
+      }
+    case 0x9000:
+      if (this.V[x] !== this.V[y]) {
+        this.pc += 2
+      }
+      break
     case 0xA000:
       // Annn - Set I = nnn.
       this.I = nnn
       break
+    case 0xB000: 
+      this.pc = nnn + V[0x0]
     case 0xC000:
       // Cxkk - Set Vx = random byte AND kk.
       this.V[x] = (Math.random() * (0xFF + 1)) & kk
