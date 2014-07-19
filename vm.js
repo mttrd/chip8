@@ -123,13 +123,28 @@ VM.prototype.step = function() {
           this.V[x] = this.V[x] - this.V[y]
           break
         case 0x8006:
-          if ()
+          if (this.V[x] & 0x000F == 1) {
+            this.V[0xF] = 1
+          } else {
+            this.V[0xF] = 0
+          }
+          this.V[x] = this.V[x] >> 1
           break
         case 0x8007:
-          this.V[x] = this.V[x] | this.V[y]
+          if (this.V[y] > this.V[x]) {
+            this.V[0xF] = 1
+          } else {
+            this.V[0xF] = 0
+          }
+          this.V[x] = this.V[x] - this.V[y]
           break
         case 0x800E:
-          this.V[x] = this.V[x] | this.V[y]
+          if (this.V[x] & 0xF000 == 1) {
+            this.V[0xF] = 1
+          } else {
+            this.V[0xF] = 0
+          }
+          this.V[x] = this.V[x] << 1
           break
       }
     case 0x9000:
@@ -158,6 +173,9 @@ VM.prototype.step = function() {
         case 0xF01E:
           // Fx1E - Set I = I + Vx.
           this.I += this.V[x]
+          break
+        case 0xF029:
+          this.I = this.V[x]
           break
       }
       break
